@@ -56,7 +56,7 @@
                                                 <td>{{ $i->program_type->name }}</td>
                                                 <td>{{ $i->name }}</td>
                                                 <td>Rp. {{ number_format($i->price) }}</td>
-                                                <td>{{ $i->image }}</td>
+                                                <td><img src="{{ asset('storage/upload_files/img/'.$i->image) }}" height="42" width="42" /></td>
                                                 <td>{{ $i->is_active ? 'Aktif' : 'Tidak Aktif' }}</td>
                                             @canany(['update programs', 'delete programs'])
                                                     <td>
