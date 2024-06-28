@@ -175,7 +175,7 @@
 
                         <div class="d-flex justify-content-between mb-4">
                             <p class="mb-2"><strong>Total Biaya</strong></p>
-                            <p class="mb-2"><strong>Rp. {{ number_format($program->price) }}</strong></p>
+                            <p class="mb-2"><strong>Rp. {{ number_format($program->price - $diskon) }}</strong></p>
                         </div>
 
                         <div class="row mb-0">
