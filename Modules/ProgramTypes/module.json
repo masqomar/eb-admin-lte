@@ -1,0 +1,23 @@
+{
+    "name": "ProgramTypes",
+    "label": "ProgramTypes",
+    "alias": "programtypes",
+    "description": "manage all programtypes",
+    "keywords": ["programtypes"],
+    "priority": 0,
+    "providers": [
+        "Modules\\ProgramTypes\\Providers\\ProgramTypesServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Jenis Program",
+            "route": "programtypes.index",
+            "permission": "read programtypes"
+        }
+    ],
+    "permissions": ["programtypes"]
+}

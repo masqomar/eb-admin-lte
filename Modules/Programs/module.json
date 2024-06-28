@@ -1,0 +1,23 @@
+{
+    "name": "Programs",
+    "label": "Programs",
+    "alias": "programs",
+    "description": "manage all programs",
+    "keywords": ["programs"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Programs\\Providers\\ProgramsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Programs",
+            "route": "programs.index",
+            "permission": "read programs"
+        }
+    ],
+    "permissions": ["programs"]
+}

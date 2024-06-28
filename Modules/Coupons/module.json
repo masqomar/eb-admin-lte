@@ -1,0 +1,23 @@
+{
+    "name": "Coupons",
+    "label": "Coupons",
+    "alias": "coupons",
+    "description": "manage all coupons",
+    "keywords": ["coupons"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Coupons\\Providers\\CouponsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Kupon Diskon",
+            "route": "coupons.index",
+            "permission": "read coupons"
+        }
+    ],
+    "permissions": ["coupons"]
+}

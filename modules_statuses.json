@@ -1,0 +1,8 @@
+{
+    "ProgramTypes": true,
+    "Programs": true,
+    "Coupons": true,
+    "Transactions": true,
+    "Students": true,
+    "Categories": true
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Students",
+    "label": "Students",
+    "alias": "students",
+    "description": "manage all students",
+    "keywords": ["students"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Students\\Providers\\StudentsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [],
+    "permissions": ["students"]
+}

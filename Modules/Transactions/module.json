@@ -1,0 +1,16 @@
+{
+    "name": "Transactions",
+    "label": "Transactions",
+    "alias": "transactions",
+    "description": "manage all transactions",
+    "keywords": ["transactions"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Transactions\\Providers\\TransactionsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [],
+    "permissions": ["transactions"]
+}

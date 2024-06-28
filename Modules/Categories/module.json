@@ -1,0 +1,23 @@
+{
+    "name": "Categories",
+    "label": "Categories",
+    "alias": "categories",
+    "description": "manage all categories",
+    "keywords": ["categories"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Categories\\Providers\\CategoriesServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Kategori",
+            "route": "categories.index",
+            "permission": "read categories"
+        }
+    ],
+    "permissions": ["categories"]
+}
