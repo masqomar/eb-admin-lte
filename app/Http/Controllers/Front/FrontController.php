@@ -85,51 +85,147 @@ class FrontController extends Controller
 
             $program = Program::where('id', $request->program_id)->first();
             $coupon = Coupon::where('id', $request->coupon_id)->first();
-            $transaction = Transaction::create([
-                'user_id' => $user->id,
-                'total_purchases' => $program->price,
-                'maximum_payment_time' => Carbon::now()->addDays(1),
-                'code' => Transaction::generateCode(),
-                'transaction_status' => 'pending',
-                'invoice' => 'EB.' . date('dmy') . '.' . rand(1000, 9999),
-                'program_id' => $request->program_id,
-                'program_date' => $request->program_date,
-                'program_time' => $request->program_time,
-                'note' => $request->message,
-                'discount' => $coupon->amount ?? 0
-            ]);
-
-            $payload = [
-                'transaction_details' => [
-                    'order_id'     => $transaction->invoice,
-                    'gross_amount' => $program->price - $coupon->amount,
-                ],
-                'customer_details' => [
-                    'first_name'    => $user->name,
-                    'email'         => $user->email,
-                ],
-                'item_details' => [
-                    [
-                        'id'            => $transaction->invoice,
-                        'price'         => $program->price - $coupon->amount,
-                        'quantity'      => 1,
-                        'name'          => 'Program ' . $program->name,
-                        'brand'         => 'English Booster',
-                        'category'      => 'English Course',
-                        'merchant_name' => config('app.name'),
+            if($coupon == null) {
+                $transaction = Transaction::create([
+                    'user_id' => $user->id,
+                    'total_purchases' => $program->price,
+                    'maximum_payment_time' => Carbon::now()->addDays(1),
+                    'code' => Transaction::generateCode(),
+                    'transaction_status' => 'pending',
+                    'invoice' => 'EB.' . date('dmy') . '.' . rand(1000, 9999),
+                    'program_id' => $request->program_id,
+                    'program_date' => $request->program_date,
+                    'program_time' => $request->program_time,
+                    'note' => $request->message,
+                    'discount' => 0
+                ]);
+    
+                $payload = [
+                    'transaction_details' => [
+                        'order_id'     => $transaction->invoice,
+                        'gross_amount' => $program->price,
                     ],
-                ],
-            ];
+                    'customer_details' => [
+                        'first_name'    => $user->name,
+                        'email'         => $user->email,
+                    ],
+                    'item_details' => [
+                        [
+                            'id'            => $transaction->invoice,
+                            'price'         => $program->price,
+                            'quantity'      => 1,
+                            'name'          => 'Program ' . $program->name,
+                            'brand'         => 'English Booster',
+                            'category'      => 'English Course',
+                            'merchant_name' => config('app.name'),
+                        ],
+                    ],
+                ];
+    
+                $snapToken = \Midtrans\Snap::getSnapToken($payload);
+                $transaction->snap_token = $snapToken;
+                $transaction->save();
+    
+                $admin = User::find('20b2a4122c614bb68e41b1a6f3f37780');
+                $admin->notify(new SendNewUserNotification($user));
+    
+                $message = "*Mohon dibaca dan dipahami!*\n\n_Hallo, saya admin dari English Booster Kampung Inggris, akun kamu telah terdaftar di platform kami dengan data_\n\nNama: " . $user->name . "\nEmail: " . $user->email . "\n\nBerikut link pembayaran dan verifikasi kamu\n" . env('APP_URL') . "/invoice/" . $transaction->id . "\n\n*Jika link tidak bisa diklik, silakan simpan dulu nomor ini atau copy dan paste dibrowser kamu.*\n\n_terimakasih telah menjadi bagian dari kami, semoga English Booster Kampung Inggris dapat membantu proses belajar kamu. aamiin._";
+                sendWhatsappNotification($student->phone_number, $message);
 
-            $snapToken = \Midtrans\Snap::getSnapToken($payload);
-            $transaction->snap_token = $snapToken;
-            $transaction->save();
+            } elseif ($coupon->id == $request->coupon_id && $coupon->program_id == $request->program_id) {            
+                $transaction = Transaction::create([
+                    'user_id' => $user->id,
+                    'total_purchases' => $program->price,
+                    'maximum_payment_time' => Carbon::now()->addDays(1),
+                    'code' => Transaction::generateCode(),
+                    'transaction_status' => 'pending',
+                    'invoice' => 'EB.' . date('dmy') . '.' . rand(1000, 9999),
+                    'program_id' => $request->program_id,
+                    'program_date' => $request->program_date,
+                    'program_time' => $request->program_time,
+                    'note' => $request->message,
+                    'discount' => $coupon->amount,
+                ]);
+    
+                $payload = [
+                    'transaction_details' => [
+                        'order_id'     => $transaction->invoice,
+                        'gross_amount' => $program->price - $coupon->amount,
+                    ],
+                    'customer_details' => [
+                        'first_name'    => $user->name,
+                        'email'         => $user->email,
+                    ],
+                    'item_details' => [
+                        [
+                            'id'            => $transaction->invoice,
+                            'price'         => $program->price - $coupon->amount,
+                            'quantity'      => 1,
+                            'name'          => 'Program ' . $program->name,
+                            'brand'         => 'English Booster',
+                            'category'      => 'English Course',
+                            'merchant_name' => config('app.name'),
+                        ],
+                    ],
+                ];
+    
+                $snapToken = \Midtrans\Snap::getSnapToken($payload);
+                $transaction->snap_token = $snapToken;
+                $transaction->save();
+    
+                $admin = User::find('20b2a4122c614bb68e41b1a6f3f37780');
+                $admin->notify(new SendNewUserNotification($user));
+    
+                $message = "*Mohon dibaca dan dipahami!*\n\n_Hallo, saya admin dari English Booster Kampung Inggris, akun kamu telah terdaftar di platform kami dengan data_\n\nNama: " . $user->name . "\nEmail: " . $user->email . "\n\nBerikut link pembayaran dan verifikasi kamu\n" . env('APP_URL') . "/invoice/" . $transaction->id . "\n\n*Jika link tidak bisa diklik, silakan simpan dulu nomor ini atau copy dan paste dibrowser kamu.*\n\n_terimakasih telah menjadi bagian dari kami, semoga English Booster Kampung Inggris dapat membantu proses belajar kamu. aamiin._";
+                sendWhatsappNotification($student->phone_number, $message);
 
-            $admin = User::find('20b2a4122c614bb68e41b1a6f3f37780');
-            $admin->notify(new SendNewUserNotification($user));
-
-            $message = "*Mohon dibaca dan dipahami!*\n\n_Hallo, saya admin dari English Booster Kampung Inggris, akun kamu telah terdaftar di platform kami dengan data_\n\nNama: " . $user->name . "\nEmail: " . $user->email . "\n\nBerikut link pembayaran dan verifikasi kamu\n" . env('APP_URL') . "/invoice/" . $transaction->id . "\n\n*Jika link tidak bisa diklik, silakan simpan dulu nomor ini atau copy dan paste dibrowser kamu.*\n\n_terimakasih telah menjadi bagian dari kami, semoga English Booster Kampung Inggris dapat membantu proses belajar kamu. aamiin._";
-            sendWhatsappNotification($student->phone_number, $message);
+            } else {
+                $transaction = Transaction::create([
+                    'user_id' => $user->id,
+                    'total_purchases' => $program->price,
+                    'maximum_payment_time' => Carbon::now()->addDays(1),
+                    'code' => Transaction::generateCode(),
+                    'transaction_status' => 'pending',
+                    'invoice' => 'EB.' . date('dmy') . '.' . rand(1000, 9999),
+                    'program_id' => $request->program_id,
+                    'program_date' => $request->program_date,
+                    'program_time' => $request->program_time,
+                    'note' => $request->message,
+                    'discount' => 0
+                ]);
+    
+                $payload = [
+                    'transaction_details' => [
+                        'order_id'     => $transaction->invoice,
+                        'gross_amount' => $program->price,
+                    ],
+                    'customer_details' => [
+                        'first_name'    => $user->name,
+                        'email'         => $user->email,
+                    ],
+                    'item_details' => [
+                        [
+                            'id'            => $transaction->invoice,
+                            'price'         => $program->price,
+                            'quantity'      => 1,
+                            'name'          => 'Program ' . $program->name,
+                            'brand'         => 'English Booster',
+                            'category'      => 'English Course',
+                            'merchant_name' => config('app.name'),
+                        ],
+                    ],
+                ];
+    
+                $snapToken = \Midtrans\Snap::getSnapToken($payload);
+                $transaction->snap_token = $snapToken;
+                $transaction->save();
+    
+                $admin = User::find('20b2a4122c614bb68e41b1a6f3f37780');
+                $admin->notify(new SendNewUserNotification($user));
+    
+                $message = "*Mohon dibaca dan dipahami!*\n\n_Hallo, saya admin dari English Booster Kampung Inggris, akun kamu telah terdaftar di platform kami dengan data_\n\nNama: " . $user->name . "\nEmail: " . $user->email . "\n\nBerikut link pembayaran dan verifikasi kamu\n" . env('APP_URL') . "/invoice/" . $transaction->id . "\n\n*Jika link tidak bisa diklik, silakan simpan dulu nomor ini atau copy dan paste dibrowser kamu.*\n\n_terimakasih telah menjadi bagian dari kami, semoga English Booster Kampung Inggris dapat membantu proses belajar kamu. aamiin._";
+                sendWhatsappNotification($student->phone_number, $message);
+            }            
 
             DB::commit();
 
