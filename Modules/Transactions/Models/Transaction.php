@@ -92,6 +92,11 @@ class Transaction extends Model
     {
         return $this->belongsTo(Program::class);
     }
+
+    public function getProgramDateAttribute($value)
+    {
+        return dateFormat($value, 'd F Y');
+    }
     
     protected static function newFactory()
     {

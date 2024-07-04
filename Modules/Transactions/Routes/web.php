@@ -11,5 +11,8 @@ Route::middleware('auth')->prefix('admin/transactions')->group(function() {
         Route::post('/show', 'show')->middleware(['permisson:read transactions'])->name('transactions.show');
         Route::put('/', 'update')->middleware(['permisson:update transactions'])->name('transactions.update');
         Route::delete('/', 'destroy')->middleware(['permisson:delete transactions'])->name('transactions.destroy');
+
+        Route::get('/detail/{id}', 'detail')->middleware(['permisson:read transactions'])->name('transactions.detail');
+        Route::put('/detail', 'updateStatus')->middleware(['permisson:update transactions'])->name('transactions.updateStatus');
     });
 });
