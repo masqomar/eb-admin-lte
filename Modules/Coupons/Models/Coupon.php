@@ -16,6 +16,14 @@ class Coupon extends Model
 
     protected $keyType = 'string';
 
+    protected $fillable = [
+        'id',
+        'code',
+        'amount',
+        'qty',
+        'program_id'
+    ];
+
     function program()
     {
         return $this->belongsTo(Program::class);

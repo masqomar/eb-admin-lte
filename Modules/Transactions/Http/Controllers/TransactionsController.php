@@ -11,6 +11,7 @@ use Modules\Students\Models\Student;
 use Modules\Transactions\Models\Transaction;
 use RealRashid\SweetAlert\Facades\Alert;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class TransactionsController extends Controller
 {
@@ -96,8 +97,9 @@ class TransactionsController extends Controller
     public function updateStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'is_active'      => ['nullable', 'integer'],
-            'is_member'      => ['nullable', 'integer']
+            'status'    => ['nullable', 'string', "max:255"],
+            'is_active' => ['nullable', 'integer'],
+            'is_member' => ['nullable', 'integer']
         ]);
         if ($validator->fails()) {
             return back()->withErrors($validator)
@@ -105,6 +107,13 @@ class TransactionsController extends Controller
         }
         DB::beginTransaction();
         try {
+            $voucherToken = Str::random(15);
+            $transactionStatus = Transaction::where('id', $request->transaction_id)->first();
+            $transactionStatus->update([
+                'transaction_status'    => $request->status,
+                'voucher_token'         => $voucherToken
+            ]);
+
             $student = Student::where('user_id', $request->user_id)->first();
             $student->update([
                 'is_member'  => $request->is_member

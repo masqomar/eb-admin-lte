@@ -29,7 +29,7 @@
                             @can('create coupons')
                             <div class="card-header">
                                 <h3 class="card-title">
-                                    <a href="#" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal-tambah" data-backdrop="static" data-keyboard="false"><i class="fas fa-plus"></i> Tambah</a>
+                                    <a href="{{ route('coupons.create') }}" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Tambah</a>
                                 </h3>
                             </div>
                             @endcan
@@ -60,7 +60,7 @@
                                                     <td>
                                                         <div class="btn-group">
                                                             @can('update coupons')
-                                                                <button class="btn btn-sm btn-primary btn-edit" data-id="{{ $i->id }}"><i class="fas fa-pencil-alt"></i></button>
+                                                                <a href="{{ route('coupons.edit', $i->id) }}" class="btn btn-sm btn-primary btn-edit"><i class="fas fa-pencil-alt"></i></a>
                                                             @endcan
                                                             @can('delete coupons')
                                                                 <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $i->id }}" data-name="{{ $i->name }}"><i class="fas fa-trash"></i></button>
@@ -88,28 +88,7 @@
 
 @section('js')
     <script>
-        $(document).ready(function() {
-            $(document).on("click", '.btn-edit', function() {
-                let id = $(this).attr("data-id");
-                $('#modal-loading').modal({backdrop: 'static', keyboard: false, show: true});
-                $.ajax({
-                    url: "{{ route('coupons.show') }}",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        id: id,
-                        _token: "{{ csrf_token() }}"
-                    },
-                    success: function(data) {
-                        var data = data.data;
-                        $("#name").val(data.name);
-                        $("#id").val(data.id);
-                        $('#modal-loading').modal('hide');
-                        $('#modal-edit').modal({backdrop: 'static', keyboard: false, show: true});
-                    },
-                });
-            });
-            
+        $(document).ready(function() {            
             $(document).on("click", '.btn-delete', function() {
                 let id = $(this).attr("data-id");
                 let name = $(this).attr("data-name");
@@ -122,74 +101,6 @@
 @endsection
 
 @section('modal')
-    {{-- Modal tambah --}}
-    <div class="modal fade" id="modal-tambah">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Tambah Data</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('coupons.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="input-group">
-                            <label>Name</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" placeholder="Name" name="name" value="{{ old('name') }}">
-                                @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-                </form>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-    {{-- Modal Update --}}
-    <div class="modal fade" id="modal-edit">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Edit Data</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('coupons.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method("PUT")
-                        <div class="input-group">
-                            <label>Name</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" placeholder="Name" name="name" id="name" value="{{ old('name') }}">
-                                @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <input type="hidden" name="id" id="id">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-                </form>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
     {{-- Modal delete --}}
     <div class="modal fade" id="modal-delete">
         <div class="modal-dialog">

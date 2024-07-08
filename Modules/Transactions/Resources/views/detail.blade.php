@@ -68,6 +68,11 @@
                                         <td>{{ $transaction->program->name }}</td>
                                     </tr>
                                     <tr>
+                                        <th>Akses Token</th>
+                                        <td>&nbsp; : &nbsp;</td>
+                                        <td>{{ $transaction->voucher_token }}</td>
+                                    </tr>
+                                    <tr>
                                         <th>Tanggal</th>
                                         <td>&nbsp; : &nbsp;</td>
                                         <td>{{ $transaction->program_date }}</td>
@@ -76,7 +81,7 @@
                                         <th>Jam</th>
                                         <td>&nbsp; : &nbsp;</td>
                                         <td>{{ $transaction->program_time }} WIB</td>
-                                    </tr>                                   
+                                    </tr>
                                     <tr>
                                         <th>Biaya</th>
                                         <td>&nbsp; : &nbsp;</td>
@@ -85,28 +90,12 @@
                                     <tr>
                                         <th>Diskon</th>
                                         <td>&nbsp; : &nbsp;</td>
-                                        <td>{{ $transaction->discount ? $transaction->discount : 0 }}</td>
+                                        <td>Rp. {{ number_format( $transaction->discount ? $transaction->discount : 0 ) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Bayar</th>
                                         <td>&nbsp; : &nbsp;</td>
-                                        <td>Rp. {{ number_format($transaction->total_purchases) }}</td>
-                                    </tr>
-                                        @php
-
-                                        if ($transaction->transaction_status == 'pending') {
-                                        $color = "yellow";
-                                        }elseif ($transaction->transaction_status == 'failed') {
-                                        $color = "red";
-                                        }else{
-                                        $color = "green";
-                                        }
-
-                                        @endphp
-                                    <tr>
-                                        <th>Status</th>
-                                        <td>&nbsp; : &nbsp;</td>
-                                        <td style="background-color:{{$color}}"><strong>{{$transaction->transaction_status}}</strong></td>
+                                        <td>Rp. {{ number_format($transaction->total_purchases - $transaction->discount) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Maksimal</th>
@@ -119,26 +108,40 @@
                                         <td>{!! $transaction->note ? $transaction->note : '-' !!}</td>
                                     </tr>
                                 </table>
-                                
+
                                 <hr>
+                                <input type="hidden" value="{{ $transaction->id}}" name="transaction_id">
                                 <input type="hidden" value="{{ $transaction->user->id}}" name="user_id">
                                 <div class="form-group row">
-                                    <label class="col-sm-2 col-form-label">Pengguna ?</label>
+                                    <label class="col-sm-2 col-form-label">Status Pembayaran</label>
                                     <div class="col-sm-10">
-                                        <select name="is_active" class="form-control">
-                                        <option value="1" @selected(old('$transaction->user->is_active') ?? $transaction->user->is_active == 1)>Aktif</option>
-                                        <option value="0" @selected(old('$transaction->user->is_active') ?? $transaction->user->is_active == 0)>Tidak Aktif</option>
+                                        <select name="status" class="form-control">
+                                            <option value="pending" @selected(old('$transaction->transaction_status') ?? $transaction->transaction_status == 'pending')>Pending</option>
+                                            <option value="paid" @selected(old('$transaction->transaction_status') ?? $transaction->transaction_status == 'paid')>Lunas</option>
+                                            <option value="failed" @selected(old('$transaction->transaction_status') ?? $transaction->transaction_status == 'failed')>Gagal</option>
+                                            <option value="done" @selected(old('$transaction->transaction_status') ?? $transaction->transaction_status == 'done')>Terverifikasi</option>
                                         </select>
 
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
-                                    <label class="col-sm-2 col-form-label">Member ?</label>
+                                    <label class="col-sm-2 col-form-label">Akses App ?</label>
+                                    <div class="col-sm-10">
+                                        <select name="is_active" class="form-control">
+                                            <option value="1" @selected(old('$transaction->user->is_active') ?? $transaction->user->is_active == 1)>Aktif</option>
+                                            <option value="0" @selected(old('$transaction->user->is_active') ?? $transaction->user->is_active == 0)>Tidak Aktif</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Akses CBT ?</label>
                                     <div class="col-sm-10">
                                         <select name="is_member" class="form-control">
-                                        <option value="1" @selected(old('$transaction->user->student->is_member') ?? $transaction->user->student->is_member == 1)>Aktif</option>
-                                        <option value="0" @selected(old('$transaction->user->student->is_member') ?? $transaction->user->student->is_member == 0)>Tidak Aktif</option>
+                                            <option value="1" @selected(old('$transaction->user->student->is_member') ?? $transaction->user->student->is_member == 1)>Aktif</option>
+                                            <option value="0" @selected(old('$transaction->user->student->is_member') ?? $transaction->user->student->is_member == 0)>Tidak Aktif</option>
                                         </select>
 
                                     </div>

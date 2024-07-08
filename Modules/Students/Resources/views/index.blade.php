@@ -44,9 +44,8 @@
                                             <th>JK</th>
                                             <th>No HP</th>
                                             <th>Alamat</th>
-                                            <th>Member</th>
-                                            <th>Status</th>
                                             <th>Akses CBT</th>
+                                            <th>Status</th>
                                             @canany(['update students', 'delete students'])
                                                 <th>Action</th>
                                             @endcanany
@@ -62,8 +61,7 @@
                                                 <td>{{ $i->phone_number }}</td>
                                                 <td>{{ $i->address }}</td>
                                                 <td>{{ $i->is_member ? 'Aktif' : 'Tidak Aktif' }}</td>
-                                                <td>{{ $i->is_active ? 'Aktif' : 'Tidak Aktif' }}</td>
-                                                <td>{{ $i->member_access ? $i->member_access : '-' }}</td>
+                                                <td>{{ $i->user->is_active ? 'Aktif' : 'Tidak Aktif' }}</td>
                                             @canany(['update students', 'delete students'])
                                                     <td>
                                                         <div class="btn-group">

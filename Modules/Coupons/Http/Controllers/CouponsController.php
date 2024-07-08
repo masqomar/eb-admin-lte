@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Routing\Controller;
 use Modules\Coupons\Models\Coupon;
+use Modules\Programs\Models\Program;
 use RealRashid\SweetAlert\Facades\Alert;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,10 +20,21 @@ class CouponsController extends Controller
         return view('coupons::index', $x);
     }
 
+    public function create()
+    {
+        $x['title']     = "Tambah Kupon Diskon";
+        $x['data']      = Program::get();
+
+        return view('coupons::create', $x);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => ['required', 'string', 'max:255']
+            'code'          => ['required', 'string', 'max:255'],
+            'amount'        => ['required', 'integer'],
+            'qty'           => ['required', 'integer'],
+            'program_id'    => ['required', 'string', 'max:255'],
         ]);
         if ($validator->fails()) {
             return back()->withErrors($validator)
@@ -30,29 +42,35 @@ class CouponsController extends Controller
         }
         try {
             $coupon = Coupon::create([
-                'name'      => $request->name
+                'code'          => $request->code,
+                'amount'        => $request->amount,
+                'qty'           => $request->qty,
+                'program_id'    => $request->program_id,
             ]);
-            Alert::success('Pemberitahuan', 'Data <b>' . $coupon->name . '</b> berhasil dibuat')->toToast()->toHtml();
+            Alert::success('Pemberitahuan', 'Data <b>' . $coupon->code . '</b> berhasil dibuat')->toToast()->toHtml();
         } catch (\Throwable $th) {
-            Alert::error('Pemberitahuan', 'Data <b>' . $coupon->name . '</b> gagal dibuat : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Pemberitahuan', 'Data <b>' . $coupon->code . '</b> gagal dibuat : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
 
-    public function show(Request $request)
+    public function edit($id)
     {
-        $coupon = Coupon::find($request->id);
-        return response()->json([
-            'status'    => Response::HTTP_OK,
-            'message'   => 'Data coupon by id',
-            'data'      => $coupon
-        ], Response::HTTP_OK);
+        $title = 'Edit Kupon Diskon';
+        $coupon = Coupon::find($id);
+        $programs = Program::get();
+
+        return view('coupons::edit', compact('title', 'coupon', 'programs'));
     }
 
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => ['required', 'string', 'max:255']
+            'id'            => ['required', 'string', 'max:255'],
+            'program_id'    => ['required', 'string', 'max:255'],
+            'code'          => ['required', 'string', 'max:255'],
+            'amount'        => ['required', 'integer'],
+            'qty'           => ['required', 'integer'],
         ]);
         if ($validator->fails()) {
             return back()->withErrors($validator)
@@ -61,13 +79,16 @@ class CouponsController extends Controller
         try {
             $coupon = Coupon::find($request->id);
             $coupon->update([
-                'name'  => $request->name
+                'program_id'    => $request->program_id,
+                'code'          => $request->code,
+                'amount'        => $request->amount,
+                'qty'           => $request->qty,
             ]);
-            Alert::success('Pemberitahuan', 'Data <b>' . $coupon->name . '</b> berhasil disimpan')->toToast()->toHtml();
+            Alert::success('Pemberitahuan', 'Data <b>' . $coupon->code . '</b> berhasil disimpan')->toToast()->toHtml();
         } catch (\Throwable $th) {
-            Alert::error('Pemberitahuan', 'Data <b>' . $coupon->name . '</b> gagal disimpan : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Pemberitahuan', 'Data <b>' . $coupon->code . '</b> gagal disimpan : ' . $th->getMessage())->toToast()->toHtml();
         }
-        return back();
+        return view('coupons::index');
     }
 
     public function destroy(Request $request)

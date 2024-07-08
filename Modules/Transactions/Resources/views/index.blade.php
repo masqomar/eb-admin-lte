@@ -56,7 +56,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $i->user->name }}</td>
-                                        <td>{{ $i->program->name }}</td>
+                                        <td>{{ $i->program_id == null ? '-' : $i->program->name }}</td>
                                         <td>Rp. {{ number_format($i->total_purchases) }}</td>
                                         <td>{{ $i->discount ? $i->discount : '-' }}</td>
                                         <td>{{ $i->code }}</td>
